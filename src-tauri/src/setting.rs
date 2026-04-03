@@ -76,6 +76,22 @@ impl Default for AppSetting {
 
 #[tauri::command]
 pub fn get_app_setting(state: tauri::State<'_, AppState>) -> Result<AppSetting, String> {
-    let setting = state.app_setting.lock().unwrap();
+    let setting = state
+        .app_setting
+        .lock()
+        .map_err(|error| format!("AppSettingの取得に失敗しました: {}", error.to_string()))?;
     Ok(setting.clone())
+}
+
+#[tauri::command]
+pub fn update_app_setting(
+    state: tauri::State<'_, AppState>,
+    new_app_setting: AppSetting,
+) -> Result<(), String> {
+    let mut setting = state
+        .app_setting
+        .lock()
+        .map_err(|error| format!("AppSettingの更新に失敗しました: {}", error.to_string()))?;
+    *setting = new_app_setting;
+    Ok(())
 }
