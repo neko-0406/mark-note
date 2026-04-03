@@ -1,0 +1,7 @@
+build/
+coverage/
+src-tauri/
+node_modules/
+public/
+.gitignore
+bun.lock
