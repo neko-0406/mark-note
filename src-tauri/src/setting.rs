@@ -1,6 +1,6 @@
 use std::{
     fs::{self, File},
-    io::BufReader,
+    io::{BufReader, BufWriter},
     sync::Mutex,
 };
 
@@ -18,39 +18,25 @@ pub struct AppSetting {
 impl AppSetting {
     pub fn load(app_handle: &AppHandle) -> Result<Mutex<AppSetting>, String> {
         // アプリのデータディレクトリの確認・作成
-        let app_data_dir = app_handle.path().app_data_dir().map_err(|error| {
-            format!(
-                "アプリのデータディレクトリの取得に失敗しました: {}",
-                error.to_string()
-            )
-        })?;
+        let app_data_dir = app_handle
+            .path()
+            .app_data_dir()
+            .map_err(|error| format!("アプリのデータディレクトリの取得に失敗しました: {}", error.to_string()))?;
         if !app_data_dir.exists() {
-            fs::create_dir(&app_data_dir).map_err(|error| {
-                format!(
-                    "アプリデータディレクトリの作成に失敗しました: {}",
-                    error.to_string()
-                )
-            })?;
+            fs::create_dir(&app_data_dir)
+                .map_err(|error| format!("アプリデータディレクトリの作成に失敗しました: {}", error.to_string()))?;
         }
 
         // コンフィグファイルの確認・作成
         let config_file = app_data_dir.join("app_setting.json");
         if !config_file.exists() {
-            File::create(&config_file).map_err(|error| {
-                format!(
-                    "コンフィグファイルの作成に失敗しました: {}",
-                    error.to_string()
-                )
-            })?;
+            File::create(&config_file)
+                .map_err(|error| format!("コンフィグファイルの作成に失敗しました: {}", error.to_string()))?;
         }
 
         // コンフィグファイルのロード
-        let file = File::open(&config_file).map_err(|error| {
-            format!(
-                "コンフィグファイルのロードに失敗しました: {}",
-                error.to_string()
-            )
-        })?;
+        let file = File::open(&config_file)
+            .map_err(|error| format!("コンフィグファイルのロードに失敗しました: {}", error.to_string()))?;
         let reader = BufReader::new(file);
 
         let app_setting: AppSetting = match serde_json::from_reader(reader) {
@@ -84,14 +70,35 @@ pub fn get_app_setting(state: tauri::State<'_, AppState>) -> Result<AppSetting, 
 }
 
 #[tauri::command]
-pub fn update_app_setting(
-    state: tauri::State<'_, AppState>,
-    new_app_setting: AppSetting,
-) -> Result<(), String> {
+pub fn update_app_setting(state: tauri::State<'_, AppState>, new_app_setting: AppSetting) -> Result<(), String> {
     let mut setting = state
         .app_setting
         .lock()
         .map_err(|error| format!("AppSettingの更新に失敗しました: {}", error.to_string()))?;
     *setting = new_app_setting;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn save_app_setting(app_handle: &AppHandle, state: tauri::State<'_, AppState>) -> Result<(), String> {
+    let app_data_dir = app_handle
+        .path()
+        .app_data_dir()
+        .map_err(|error| format!("アプリデータディレクトリの取得に失敗しました: {}", error.to_string()))?;
+    let config_file_path = &app_data_dir.join("app_setting.json");
+    if !config_file_path.exists() {
+        return Err("アプリの設定ファイルが見つかりません".to_string());
+    }
+
+    let file = File::open(&config_file_path)
+        .map_err(|error| format!("設定ファイルのロードに失敗しました: {}", error.to_string()))?;
+    let writer = BufWriter::new(file);
+
+    let setting: AppSetting = state
+        .app_setting
+        .lock()
+        .map_err(|error| format!("設定の取得に失敗しました: {}", error.to_string()))?;
+
+    serde_json::to_writer_pretty(&writer, &setting);
     Ok(())
 }
