@@ -1,8 +1,7 @@
-# Ignore artifacts:
-build
-coverage
-src-tauri/*
-node_modules
-public
+build/
+coverage/
+src-tauri/
+node_modules/
+public/
 .gitignore
 bun.lock
