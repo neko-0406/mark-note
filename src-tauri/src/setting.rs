@@ -80,7 +80,7 @@ pub fn update_app_setting(state: tauri::State<'_, AppState>, new_app_setting: Ap
 }
 
 #[tauri::command]
-pub fn save_app_setting(app_handle: &AppHandle, state: tauri::State<'_, AppState>) -> Result<(), String> {
+pub fn save_app_setting(app_handle: AppHandle, state: tauri::State<'_, AppState>) -> Result<(), String> {
     let app_data_dir = app_handle
         .path()
         .app_data_dir()
@@ -94,11 +94,12 @@ pub fn save_app_setting(app_handle: &AppHandle, state: tauri::State<'_, AppState
         .map_err(|error| format!("設定ファイルのロードに失敗しました: {}", error.to_string()))?;
     let writer = BufWriter::new(file);
 
-    let setting: AppSetting = state
+    let setting = state
         .app_setting
         .lock()
         .map_err(|error| format!("設定の取得に失敗しました: {}", error.to_string()))?;
 
-    serde_json::to_writer_pretty(&writer, &setting);
+    serde_json::to_writer_pretty(writer, &setting.clone())
+        .map_err(|error| format!("設定の保存に失敗しました: {}", error.to_string()))?;
     Ok(())
 }

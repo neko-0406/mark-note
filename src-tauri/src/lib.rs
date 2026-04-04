@@ -2,8 +2,7 @@ use tauri::Manager;
 
 use crate::{
     app_state::AppState,
-    setting::update_app_setting,
-    setting::{get_app_setting, AppSetting},
+    setting::{get_app_setting, save_app_setting, update_app_setting, AppSetting},
 };
 
 mod app_state;
@@ -21,7 +20,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             get_app_setting,
-            update_app_setting
+            update_app_setting,
+            save_app_setting
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
