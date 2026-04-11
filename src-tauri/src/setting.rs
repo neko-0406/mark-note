@@ -11,7 +11,6 @@ use crate::app_state::AppState;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppSetting {
-    sidemenu_width: u64,
     work_directory: Option<String>,
 }
 
@@ -30,8 +29,12 @@ impl AppSetting {
         // コンフィグファイルの確認・作成
         let config_file = app_data_dir.join("app_setting.json");
         if !config_file.exists() {
-            File::create(&config_file)
+            let file = File::create(&config_file)
                 .map_err(|error| format!("コンフィグファイルの作成に失敗しました: {}", error.to_string()))?;
+            let writer = BufWriter::new(file);
+            let default_setting = AppSetting::default();
+            serde_json::to_writer_pretty(writer, &default_setting)
+                .map_err(|error| format!("コンフィグファイルの初期化に失敗しました: {}", error.to_string()))?;
         }
 
         // コンフィグファイルのロード
@@ -53,10 +56,7 @@ impl AppSetting {
 
 impl Default for AppSetting {
     fn default() -> Self {
-        Self {
-            sidemenu_width: 50,
-            work_directory: None,
-        }
+        Self { work_directory: None }
     }
 }
 
