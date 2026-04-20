@@ -17,7 +17,7 @@ pub fn get_sidemenubar_state(state: State<'_, AppState>) -> Result<SideMenubar, 
  * サイドメニューバーの状態を更新するコマンド
  */
 #[tauri::command]
-pub fn set_sidemenubar_state(state: State<'_, AppState>, new_sidebar_state: SideMenubar) -> Result<(), String> {
+pub fn update_sidemenubar_state(state: State<'_, AppState>, new_sidebar_state: SideMenubar) -> Result<(), String> {
     let mut side_menubar_state = state
         .side_menubar
         .lock()

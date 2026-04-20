@@ -4,7 +4,7 @@ use crate::{
     app_state::AppState,
     setting::{get_app_setting, save_app_setting, update_app_setting, AppSetting},
     state::side_menubar::SideMenubar,
-    tauri_commands::{get_sidemenubar_state, set_sidemenubar_state},
+    tauri_commands::{get_sidemenubar_state, update_sidemenubar_state},
 };
 
 mod app_state;
@@ -33,7 +33,7 @@ pub fn run() {
             update_app_setting,
             save_app_setting,
             get_sidemenubar_state,
-            set_sidemenubar_state
+            update_sidemenubar_state
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
