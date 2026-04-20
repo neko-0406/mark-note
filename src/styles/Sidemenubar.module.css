@@ -1,0 +1,16 @@
+.Container {
+  height: 100%;
+}
+
+.IconArea {
+  height: 100%;
+  width: 40px;
+}
+
+.PlotArea {
+  height: 100%;
+}
+
+.Splitter {
+  height: 100%;
+}
