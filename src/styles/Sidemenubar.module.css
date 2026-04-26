@@ -1,16 +1,26 @@
 .Container {
   height: 100%;
+  display: flex;
 }
 
 .IconArea {
   height: 100%;
   width: 40px;
+  background-color: var(--black-700);
+  display: flex;
+  flex-direction: row;
 }
 
 .PlotArea {
   height: 100%;
+  background-color: var(--black-300);
 }
 
 .Splitter {
   height: 100%;
+  width: 5px;
+}
+.Splitter:hover {
+  background-color: var(--blue-100);
+  cursor: ew-resize;
 }

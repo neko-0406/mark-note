@@ -6,9 +6,24 @@ export function useSideMenubarHook() {
   // サイドバーの状態を保存するためのステート
   const [state, setState] = useState<SideMenubarState | null>(null);
   // tauri::Stateへの更新関数を呼び出す間隔を記録(ms)
-  const timerRef = useRef(1000);
+  // 10s
+  const timerRef = useRef(10000);
 
-  const handleMouseDown = useCallback(() => {}, []);
+  const handleMouseDown = useCallback((event: React.MouseEvent) => {
+    event.preventDefault();
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, []);
+
+  const handleMouseMove = useCallback((event: MouseEvent) => {
+    setState((pre) => (pre ? { ...pre, width: pre.width + event.movementX } : null));
+  }, []);
+
+  const handleMouseUp = useCallback((event: MouseEvent) => {
+    event.preventDefault();
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  }, []);
 
   // ステートをtauri::Stateから取得・初期化する処理
   useEffect(() => {
@@ -34,13 +49,13 @@ export function useSideMenubarHook() {
       }
     };
     // タイマーが起動したらstateを更新
-    const intervalId = setInterval(() => updateSidebarState(), timerRef.current);
+    const timerlId = setTimeout(() => updateSidebarState(), timerRef.current);
 
     return () => {
       // 時間内に変更があればタイマーを破棄
-      clearInterval(intervalId);
+      clearTimeout(timerlId);
     };
   }, [state]);
 
-  return { state };
+  return { state, setState, handleMouseDown };
 }
