@@ -1,12 +1,39 @@
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
 }
 
 :root {
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    height: 100%;
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+#root {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+:root {
+  --black-50: #f1f1f1;
+  --black-100: #dbdbdb;
+  --black-200: #bababa;
+  --black-300: #9d9d9d;
+  --black-400: #838383;
+  --black-500: #6b6b6b;
+  --black-600: #545454;
+  --black-700: #3f3f3f;
+  --black-800: #2c2c2c;
+  --black-900: #1a1a1a;
+  --black-950: #000000;
+  --blue-100: #b8bbff;
 }
